@@ -1,0 +1,17 @@
+struct instance:
+  id:       number
+  gamemode: string
+  map:      string
+  settings: struct
+
+struct settings:
+  #0  = paused
+  #1  = active
+  #-1 = inactive
+  state:             number
+  allow-new-players: boolean
+  allow-spectators:  boolean
+  spawn-location:    location
+  default-gamemode:  gamemode
+  default-items:     objects
+  #You can probably add more here but I don't want to add too much to make it look bloated
