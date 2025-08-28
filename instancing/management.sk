@@ -5,3 +5,73 @@ options:
 on server start:
 	if {@reset-total-instance-ids-after-restart} is true:
  		set {instancer::instance_ids} to 0 
+
+#
+#create_instance(game_mode, map_id, settings)
+#destroy_instance(instance_id)
+#get_instance(instance_id)
+#list_active_instances(filter_options)
+
+#settings is a wrapped list
+function create_instance(gamemode: string, map_id: string, settings: wrappedlist={_}):
+	set {_numberOfInstances} to {instancer::total_instances}
+	set {_newID} to {_numberOfInstances}+1
+	set {_instance} to instance struct:
+		gamemode: {_gamemode}
+		map_id: {_map_id}
+		id: {_newID}
+		settings: {_settings}
+	set {instancer::total_instances} to {_newID}
+	set {_instancer::instances::%{_newID}%} to {_instance}
+	set {_data::gamemode} to {_gamemode}
+	set {_data::instance-id} to {_newID}
+	set {_data::map-id} to {_map_id}
+	set {_data::settings} to {_settings} ? "none"
+	call custom event "instancer-instance-created" using data {_data::*}
+
+function delete_instance(instance_id: number):
+    set {_instance} to {instancer::instances::%{_instance_id}%} ? {_}
+    if {_instance} isn't set:
+        admin_log(sm("error", "&cAttempted to delete non-existant instance [1]", {_instance_id}))
+    
+    set {_data::gamemode} to {_instance}->gamemode
+    set {_data::instance-id} to {_instance_id}
+    set {_data::map_id} to {_instance}->map_id
+    set {_data::settings} to {_instance}->settings
+    delete {instancer::instances::%{_instance_id}%}
+    call custom event "instancer-instance-deleted" using data {_data::*}
+
+event "instancer-instance-created":
+    pattern: [instancer] instance created
+	
+event "instancer-instance-deleted":
+    pattern: [instancer] instance deleted
+
+expression event-gamemode:
+    return type: string
+    usable in:
+        custom event "instancer-instance-created"
+        custom event "instancer-instance-deleted"
+    get:
+        return event.getData("gamemode")
+expression event-instance-id:
+    return type: number
+    usable in:
+        custom event "instancer-instance-created"
+        custom event "instancer-instance-deleted"
+    get:
+        return event.getData("instance-id")
+expression event-map:
+    return type: string
+    usable in:
+        custom event "instancer-instance-created"
+        custom event "instancer-instance-deleted"
+    get:
+        return event.getData("map-id")
+expression event-settings:
+    return type: object
+    usable in:
+        custom event "instancer-instance-created"
+        custom event "instancer-instance-deleted"
+    get:
+        return event.getData("settings")
