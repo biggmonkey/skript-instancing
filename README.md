@@ -8,3 +8,7 @@ another person's codebase is just horrible and I don't wish it upon anyone.
 
 I don't think there's a point to putting a license and crediting people when any skript made with skript can't really be **original**,
 but please don't claim my work as yours.
+
+
+
+*pssstt* want a Skript addon version of this? Check out [skGame](https://github.com/vesely-jiri/SkGame/).
