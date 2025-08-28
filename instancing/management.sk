@@ -1,0 +1,7 @@
+options:
+	reset-total-instance-ids-after-restart: false
+
+#If a /reload command is ran, this will execute so DON'T EVER DO /RELOAD!!
+on server start:
+	if {@reset-total-instance-ids-after-restart} is true:
+ 		set {instancer::instance_ids} to 0 
